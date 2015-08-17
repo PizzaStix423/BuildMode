@@ -8,12 +8,12 @@ using TShockAPI;
 
 namespace BuildMode
 {
-	[ApiVersion(1, 16)]
+	[ApiVersion(1, 21)]
 	public class BuildMode : TerrariaPlugin
 	{
 		public override string Author
 		{
-			get { return "MarioE"; }
+			get { return "MarioE, PizzaStyx, et al"; }
 		}
 		bool[] Build = new bool[256];
 		public override string Description
@@ -49,7 +49,7 @@ namespace BuildMode
 		}
 		public override void Initialize()
 		{
-			Commands.ChatCommands.Add(new Command("buildmode", BuildModeCmd, "buildmode"));
+			Commands.ChatCommands.Add(new Command("tshock.world.modify", BuildModeCmd, "build"));
 
 			ServerApi.Hooks.NetGetData.Register(this, OnGetData);
 			ServerApi.Hooks.NetSendBytes.Register(this, OnSendBytes);
@@ -187,7 +187,7 @@ namespace BuildMode
 		}
 		void OnSendBytes(SendBytesEventArgs e)
 		{
-			bool build = Build[e.Socket.whoAmI];
+			bool build = Build[e.Socket.WhoAmI];
 			switch (e.Buffer[2])
 			{
 				case 7:
@@ -239,7 +239,7 @@ namespace BuildMode
 		void BuildModeCmd(CommandArgs e)
 		{
 			Build[e.Player.Index] = !Build[e.Player.Index];
-			e.Player.SendSuccessMessage((Build[e.Player.Index] ? "En" : "Dis") + "abled build mode.");
+			e.Player.SendMessage(string.Format((Build[e.Player.Index] ? "En" : "Dis") + "abled build mode."), Color.Cyan);
 			// Time
 			NetMessage.SendData(7, e.Player.Index);
 			// NPCs
